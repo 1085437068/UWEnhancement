@@ -1,1 +1,18 @@
 说明：这个文档用来记录实验过程
+一.项目代码分析
+1.先看getting_start.md，安装环境
+支持fp16，暂时先不安装
+torchvision==0.6.0没法安装，就按照默认版本安装
+
+2.useful_tools.md文件记录了项目中工具的使用
+Visualize Network Structure：查看模型结构
+Train Process Monitoring and Training Details Review：查看训练过程
+Test Time Argument x8：测试时间参数
+Output Feature Map：输出特征图
+Get WaterNet Data：获取waternet的预处理图像
+
+
+3.model_zoo.md里面记录了UIEC^2-Net、UWCNN、WaterNet的paper、checkpoint
+
+4.数据集制作记录
+（1）waterNet需要的数据可以在https://github.com/Li-Chongyi/Water-Net_Code代码仓库中下载
