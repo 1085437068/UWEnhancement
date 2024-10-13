@@ -6,10 +6,12 @@
 clear all;
 close all;
 
-folder2 = 'folder of raw images';
-filepaths2 = dir(fullfile(folder2,'*.jpg'));
-folder3 = 'folder of GT images';
-filepaths3 = dir(fullfile(folder3,'*.jpg'));
+%folder2 = 'folder of raw images';
+folder2 = '/home/hzc/CodeRepository/UnderwaterEnhancement/DeepLearning/CNN/UWEnhancement/DATA/UIEB/Train/train';
+filepaths2 = dir(fullfile(folder2,'*.png'));
+%folder3 = 'folder of GT images';
+folder3 = '/home/hzc/CodeRepository/UnderwaterEnhancement/DeepLearning/CNN/UWEnhancement/DATA/UIEB/Train/gt';
+filepaths3 = dir(fullfile(folder3,'*.png'));
 
 global count
 count =1;
@@ -58,3 +60,5 @@ for i=1:10000
     imwrite(hazy_cont,fullfile('input_ce_train',filepaths2(i).name ));
     imwrite(hazy_gamma,fullfile('input_gc_train',filepaths2(i).name ));
     imwrite(GT,fullfile('gt_train',filepaths2(i).name ));
+
+end

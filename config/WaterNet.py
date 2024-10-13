@@ -2,6 +2,7 @@ train_name = 'Train'
 val_name = 'Val'
 test_name = 'Test'
 # backbone 和 init_type 需要写
+# 加载模型
 model = dict(type='WaterNet',
              get_parameter=True)
 dataset_type = 'AlignedDataset'
@@ -78,7 +79,7 @@ log_config = dict(
         dict(type='VisdomLoggerHook')
     ])
 
-total_epoch = 1000
+total_epoch = 100
 total_iters = None                      # epoch before iters,
 work_dir = './checkpoints/WaterNet/1'      #
 load_from = None                        # only load network parameters

@@ -80,7 +80,7 @@ log_config = dict(
         dict(type='VisdomLoggerHook')
     ])
 
-total_epoch = 1000
+total_epoch = 100
 total_iters = None                      # epoch before iters,
 work_dir = './checkpoints/UWCNN/1'      #
 load_from = None                        # only load network parameters

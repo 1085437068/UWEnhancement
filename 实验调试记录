@@ -45,4 +45,6 @@ train代码
 1.需要将所有引入包from UW. 删除，根据报错一个个删除就行
 
 2.train时，需要现将图片裁剪为统一大小（train文件夹和gt文件夹都要裁剪），这里按照论文，裁剪成为320x320，运行python train.py --gpu-ids 0
-UIEC2Net成功，跑了大约30h
+UIEC2Net成功，跑了大约30h(epoch 1000)
+UWCNN成功，跑了1-2h（epoch100）
+WaterNet成功，需要使用先matlab生成数据,他的前向传播函数有四个参数，需要修改代码model(),具体看git修改历史

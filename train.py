@@ -35,7 +35,7 @@ def get_host_info():
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
     #模型的配置信息
-    parser.add_argument('--config',type=str, default='/home/hzc/CodeRepository/UnderwaterEnhancement/DeepLearning/CNN/UWEnhancement/config/UWCNN.py',
+    parser.add_argument('--config',type=str, default='/home/hzc/CodeRepository/UnderwaterEnhancement/DeepLearning/CNN/UWEnhancement/config/WaterNet.py',
                         help='train config file path')
     #工作目录：模型和日志保存的地址
     parser.add_argument('--work_dir', help='the dir to save logs and models,')
@@ -158,10 +158,13 @@ if __name__ == '__main__':
             data_time = time.time()-t
             ite_num = ite_num + 1
             ite_num4val = ite_num*cfg.data.samples_per_gpu
-            inputs, gt = data['image'], data['gt']
+            inputs, gt, wb, ce, gc = data['image'], data['gt'], data['wb_image'], data['ce_image'], data['gc_image']
             #前向传播
-            out_rgb = model(inputs)
-
+            #out_rgb = model(inputs)
+            #WaterNet的forward计算有四个参数forward(self, x, wb, ce, gc):
+            out_rgb = model(inputs, wb, ce, gc)
+            
+            #计算loss
             optimizer.zero_grad() #清空过往梯度
             # loss_up_1 = criterion_l1_loss(up_1_out, gt)
             # loss_up_2 = criterion_l1_loss(up_2_out, gt)

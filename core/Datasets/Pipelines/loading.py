@@ -42,9 +42,12 @@ class LoadWaterNetImage(object):
         "image_path": self.img_prefix + data,
         "gt_path": self.img_prefix + data
         '''
-        ce_path = results['image_path'].split('test')[0] + self.path + 'ce/' + results['image_path'].split('/')[-1]
-        gc_path = results['image_path'].split('test')[0] + self.path + 'gc/' + results['image_path'].split('/')[-1]
-        wb_path = results['image_path'].split('test')[0] + self.path + 'wb/' + results['image_path'].split('/')[-1]
+        ce_path = results['image_path'].split('train')[0] + self.path + 'ce/' + results['image_path'].split('/')[-1]
+        gc_path = results['image_path'].split('train')[0] + self.path + 'gc/' + results['image_path'].split('/')[-1]
+        wb_path = results['image_path'].split('train')[0] + self.path + 'wb/' + results['image_path'].split('/')[-1]
+        #ce_path = results['image_path'].split('test')[0] + self.path + 'ce/' + results['image_path'].split('/')[-1]
+        #gc_path = results['image_path'].split('test')[0] + self.path + 'gc/' + results['image_path'].split('/')[-1]
+        #wb_path = results['image_path'].split('test')[0] + self.path + 'wb/' + results['image_path'].split('/')[-1]
         ce_image = Image.open(ce_path).convert('RGB')
         gc_image = Image.open(gc_path).convert('RGB')
         wb_image = Image.open(wb_path).convert('RGB')
