@@ -11,30 +11,33 @@ import os.path as osp
 from torch.nn.parallel import DataParallel
 import collections
 import visdom
-from UW.utils.read_file import Config
-from UW.core.Models import build_network
-from UW.core.Datasets import build_dataset, build_dataloader
-from UW.core.Optimizer import build_optimizer, build_scheduler
-from UW.utils import (mkdir_or_exist, get_root_logger,
+from utils.read_file import Config
+from core.Models import build_network
+from core.Datasets import build_dataset, build_dataloader
+from core.Optimizer import build_optimizer, build_scheduler
+from utils import (mkdir_or_exist, get_root_logger,
                       save_epoch, save_latest, save_item,
                       resume, load)
-from UW.core.Losses import build_loss
-from UW.utils.Visualizer import Visualizer
-from UW.utils.save_image import normimage, normPRED
+from core.Losses import build_loss
+from utils.Visualizer import Visualizer
+from utils.save_image import normimage, normPRED
 
 from tensorboardX import SummaryWriter
 TORCH_VERSION = torch.__version__
 
 from getpass import getuser
 from socket import gethostname
+#获取host
 def get_host_info():
     return f'{getuser()}@{gethostname()}'
 
-
+#解析参数
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
-    parser.add_argument('--config',type=str, default='/home/dong/GitHub_Frame/UW/config/UWCNN.py',
+    #模型的配置信息
+    parser.add_argument('--config',type=str, default='/home/hzc/CodeRepository/UnderwaterEnhancement/DeepLearning/CNN/UWEnhancement/config/UWCNN.py',
                         help='train config file path')
+    #工作目录：模型和日志保存的地址
     parser.add_argument('--work_dir', help='the dir to save logs and models,')
     group_gpus = parser.add_mutually_exclusive_group()
     group_gpus.add_argument(
@@ -54,8 +57,8 @@ def parse_args():
 
 
 if __name__ == '__main__':
-    args = parse_args()
-    cfg = Config.fromfile(args.config)
+    args = parse_args() #解析参数
+    cfg = Config.fromfile(args.config)  #args.config为模型的配置信息，cfg为配置信息dict类型的数据
     if args.work_dir is not None:
         # update configs according to CLI args if args.work_dir is not None
         cfg.work_dir = args.work_dir
@@ -73,10 +76,10 @@ if __name__ == '__main__':
     # make dirs
     mkdir_or_exist(osp.abspath(cfg.work_dir))
     timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-    cfg.log_file = osp.join(cfg.work_dir, f'{timestamp}.log')
+    cfg.log_file = osp.join(cfg.work_dir, f'{timestamp}.log')  #生成log目录
 
     # create text log
-    logger = get_root_logger(log_file=cfg.log_file, log_level=cfg.log_level)
+    logger = get_root_logger(log_file=cfg.log_file, log_level=cfg.log_level)  #生成logger文本
     dash_line = '-' * 60 + '\n'
     logger.info(dash_line)
     logger.info(f'Config:\n{cfg.pretty_text}')
@@ -102,13 +105,14 @@ if __name__ == '__main__':
     logger.info('-' * 20 + 'finish build dataset' + '-' * 20)
     # put model on gpu
     if torch.cuda.is_available():
+        print("cfg.gpu_ids:" + str(cfg.gpu_ids))
         if len(cfg.gpu_ids) == 1:
             model = model.cuda()
             logger.info('-' * 20 + 'model to one gpu' + '-' * 20)
         else:
             model = DataParallel(model.cuda(), device_ids=cfg.gpu_ids)
             logger.info('-' * 20 + 'model to multi gpus' + '-' * 20)
-    # create data_loader
+    # create data_loader：数据加载处理pipeline(LoadImageFromFile->resize->randomCrop->randomFlip->ImageToTensor->Normalize)
     data_loader = build_dataloader(
         datasets,
         cfg.data.samples_per_gpu,
@@ -134,7 +138,7 @@ if __name__ == '__main__':
     for i in range(len(cfg.test_pipeling)):
         if 'Normalize' == cfg.test_pipeling[i].type:
             save_cfg = True
-
+    #切换到训练/评估模式
     model.train()
     print("---start training...")
     scheduler = Scheduler(optimizer, cfg)
@@ -145,6 +149,7 @@ if __name__ == '__main__':
     logger.info('Start running, host: %s, work_dir: %s',
                          get_host_info(), cfg.work_dir)
     logger.info('max: %d epochs, %d iters', cfg.total_epoch, max_iters)
+    #开始迭代训练
     for epoch in range(start_epoch-1, cfg.total_epoch):
         # before epoch
         logger.info('\nStart Epoch %d -------- ', epoch+1)
@@ -154,9 +159,10 @@ if __name__ == '__main__':
             ite_num = ite_num + 1
             ite_num4val = ite_num*cfg.data.samples_per_gpu
             inputs, gt = data['image'], data['gt']
+            #前向传播
             out_rgb = model(inputs)
 
-            optimizer.zero_grad()
+            optimizer.zero_grad() #清空过往梯度
             # loss_up_1 = criterion_l1_loss(up_1_out, gt)
             # loss_up_2 = criterion_l1_loss(up_2_out, gt)
             # loss_up_3 = criterion_l1_loss(up_3_out, gt)
@@ -169,8 +175,8 @@ if __name__ == '__main__':
             # loss = loss_l1 + loss_ssim +loss_tv
             loss_l1 = loss_perc = loss_tv = loss_ssim
             loss = loss_ssim
-            loss.backward()
-            optimizer.step()
+            loss.backward()  #反向传播，计算当前梯度
+            optimizer.step()  #根据梯度更新网络参数
 
             write.add_scalar('loss_l1', loss_l1, ite_num)
             write.add_scalar('loss_ssim', loss_ssim, ite_num)
@@ -192,6 +198,7 @@ if __name__ == '__main__':
             # after iter
             time_ = time.time() - t
             t = time.time()
+            #visdom中展示图片
             if ite_num4val % 5 == 0:
 
                 inputshow = normimage(inputs, save_cfg=save_cfg)
@@ -211,6 +218,7 @@ if __name__ == '__main__':
             if ite_num % 100 == 0:
                 save_latest(model, optimizer, cfg.work_dir, epoch, ite_num)
                 model.train()
+        # 每20个epoch保存一次模型
         if epoch % 20 == 0 or epoch == cfg.total_epoch - 1:
             # print('-'*30, 'saving model')
             save_epoch(model, optimizer, cfg.work_dir, epoch, ite_num)
@@ -221,10 +229,10 @@ if __name__ == '__main__':
         # if cfg.lr_config.step[1] >= (epoch+1) >= cfg.lr_config.step[0]:
         scheduler.step()
     # after run
-    write.close()
+    write.close() #关闭tf_logs文件
         # print(optimizer.param_groups[0]['lr'])
     print()
-    save_epoch(model, optimizer, cfg.work_dir, epoch, ite_num)
+    save_epoch(model, optimizer, cfg.work_dir, epoch, ite_num) #保存模型
     logger.info('Finish Training')
 
 

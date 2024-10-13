@@ -2,7 +2,8 @@ import os
 
 
 def getfiles():
-    filenames=os.listdir('../DATA/EUVP')
+    #filenames=os.listdir('../DATA/Train/train/UIEB/raw-890')
+    filenames=os.listdir('../DATA/Test/test/UIEB/raw-890')
     print(filenames)
     return filenames
 
@@ -10,13 +11,14 @@ def getfiles():
 
 if __name__ == '__main__':
 
-    if not os.path.exists('train.txt'):
-        os.mknod('train.txt')
-
+    #if not os.path.exists('train.txt'):
+    #    os.mknod('train.txt')
+    if not os.path.exists('test.txt'):
+        os.mknod('test.txt')
     a = getfiles()
     # a.spilt('')
     l = len(a)
-    with open("train.txt", "w") as f:
+    with open("test.txt", "w") as f:
         for i in range(l):
             print(a[i])
             x = a[i]

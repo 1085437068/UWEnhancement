@@ -1,0 +1,12 @@
+{
+"matlab.mlintpath": "/home/hzc/Softwares/MatlabR2021b/bin/glnxa64",
+"matlab.matlabpath": "/home/hzc/Softwares/MatlabR2021b/bin/matlab",
+"matlab.linterEncoding": "utf8",
+"files.associations": {
+      "*.m": "matlab"
+},
+"code-runner.executorMap":{
+        "matlab": "cd $dir && matlab -nosplash -nodesktop -r $fileNameWithoutExt",
+},
+"code-runner.runInTerminal": true,
+}

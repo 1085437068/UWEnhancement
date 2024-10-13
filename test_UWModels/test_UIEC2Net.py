@@ -36,7 +36,7 @@ def parse_args():
                         default='config/UIEC2Net.py',
                         help='train config file path')
     parser.add_argument('--load_from',
-                        default='checkpoints/UIEC2Net.pth',
+                        default='checkpoints/UIEC2Net/UIEC2Net.pth',
                         help='the dir to save logs and models,')
     parser.add_argument('--savepath', help='the dir to save logs and models,')
     group_gpus = parser.add_mutually_exclusive_group()

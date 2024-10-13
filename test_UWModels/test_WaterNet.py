@@ -35,7 +35,7 @@ def parse_args():
                         default='config/WaterNet.py',
                         help='train config file path')
     parser.add_argument('--load_from',
-                        default='checkpoints/WaterNet.pth',
+                        default='checkpoints/WaterNet/WaterNet.pth',
                         help='the dir to save logs and models,')
     parser.add_argument('--savepath', help='the dir to save logs and models,')
     group_gpus = parser.add_mutually_exclusive_group()

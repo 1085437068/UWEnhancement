@@ -6,8 +6,8 @@
 clear all;
 close all;
 
-folder2 = 'folder of raw images';
-filepaths2 = dir(fullfile(folder2,'*.jpg'));
+folder2 = '/home/hzc/CodeRepository/UnderwaterEnhancement/DeepLearning/CNN/UWEnhancement/DATA/UIEB/Test/test';
+filepaths2 = dir(fullfile(folder2,'/*.png'));
 
 global count
 count =1;

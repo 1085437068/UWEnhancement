@@ -2,7 +2,7 @@
 一.项目代码分析
 1.先看getting_start.md，安装环境
 支持fp16，暂时先不安装
-torchvision==0.6.0没法安装，就按照默认版本安装
+torchvision==0.6.0需要后续手动pip安装
 
 2.useful_tools.md文件记录了项目中工具的使用
 Visualize Network Structure：查看模型结构
@@ -16,3 +16,33 @@ Get WaterNet Data：获取waternet的预处理图像
 
 4.数据集制作记录
 （1）waterNet需要的数据可以在https://github.com/Li-Chongyi/Water-Net_Code代码仓库中下载
+
+(2)UIEB数据集：总共890张图片，其中800张放到train中，90张放到test中，challenge-60放到test中
+
+
+二.代码调试记录
+test代码
+1.test_UWCNN.py调试成功
+需要调整下路径
+
+2.运行 python test_UIEC2Net.py的时候出现以下问题：
+(1)AssertionError: Torch not compiled with CUDA enabled
+解决方法：官网安装的是cpu版本的，重新安装带有cuda的：pip install torch==1.5.0+cu101 torchvision==0.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html
+(2)新问题：RuntimeError: CUDA error: CUBLAS_STATUS_EXECUTION_FAILED when calling `cublasSgemm( handle, opa, opb, m, n, k, &alpha, a, lda, b, ldb, &beta, c, ldc)`
+尝试：将图片裁剪长320x320  结果：失败
+疑问：为什么运行python test_UIEC2Net.py的时候没有问题？
+尝试：换几个环境，新建一个虚拟环境--pytorch1.10 cuda11.3，虚拟环境名称叫做pt110
+解决方法：就是环境的问题，更换到“pytorch1.10 cuda11.3，虚拟环境名称叫做pt110”解决问题，test_UWCNN.py也可以运行
+
+3.运行test_WaterNet.py
+(1)test图片需要使用matlab生成ce、gc、wb处理的图片,只能在ubuntu下安装matlab，参考https://muzing.top/posts/52276c1/, 
+https://www.jb51.net/softs/792028.html  安装成功，可生成ce、gc、wb的图片
+运行成功
+
+
+
+train代码
+1.需要将所有引入包from UW. 删除，根据报错一个个删除就行
+
+2.train时，需要现将图片裁剪为统一大小（train文件夹和gt文件夹都要裁剪），这里按照论文，裁剪成为320x320，运行python train.py --gpu-ids 0
+UIEC2Net成功，跑了大约30h
